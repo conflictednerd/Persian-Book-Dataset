@@ -1,6 +1,6 @@
-# Scrapping book information from the Internet
+# Scraping book information from the Internet
 
-Some time ago, I wanted to experiment a bit with book recommendation systems. I did not find any good Persian dataset of books, along with their information (title, authors, translators, ratings, etc.). There were some English ones, mainly scrapped from GoodReads lists, but I didn't like them either. So I decided to create a Persian dataset of books and learn how to use selenium for web scrapping along the way, which is something I wanted to learn for quite some time.
+Some time ago, I wanted to experiment a bit with book recommendation systems. I did not find any good Persian dataset of books, along with their information (title, authors, translators, ratings, etc.). There were some English ones, mainly scraped from GoodReads lists, but I didn't like them either. So I decided to create a Persian dataset of books and learn how to use selenium for web scraping along the way, which is something I wanted to learn for quite some time.
 
 So, this is how this repository was born:)
 
