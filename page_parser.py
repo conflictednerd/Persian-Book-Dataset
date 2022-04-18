@@ -8,18 +8,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from main import get_options
+# from main import get_options
 
 MAX_ELEMENT_WAIT_TIME = 5
-DEBUG = True
+DEBUG = False
+PROBLEM = False
+# Turn into a class with PROBLEM being a class variable
 
 
 def parse_book_page(driver, url: str = None):
     """
     Parses a book page and returns a dictionary with the following keys:
     """
+    global PROBLEM
+    PROBLEM = False
     if url is not None:
         driver.get(url)
+        time.sleep(2)
 
     return {
         'url': driver.current_url,
@@ -34,10 +39,10 @@ def parse_book_page(driver, url: str = None):
         'genres': get_genres(driver),
         'description': get_description(driver),
         'ratings': get_ratings(driver),
-    }
+    }, PROBLEM
 
 
-def get_title(driver) -> str:
+def get_title(driver, mode='a') -> str:
     """
     Returns the title of the book
     """
@@ -45,11 +50,16 @@ def get_title(driver) -> str:
     try:
         title = WebDriverWait(driver, MAX_ELEMENT_WAIT_TIME).until(EC.visibility_of_element_located(
             (By.XPATH,
-             '/html/body/app-root/layout/section/main/book-detail/section/app-book-detail-information/div/div/div[1]/a'
+             f'/html/body/app-root/layout/section/main/book-detail/section/app-book-detail-information/div/div/div[1]/{mode}'
              )
         )).text
     except Exception as e:
-        if DEBUG:
+        if mode == 'a':
+            title = get_title(driver, mode='h1')
+            if title == '':
+                global PROBLEM
+                PROBLEM = True
+        if title == '' and DEBUG:
             print('Title not found')
             print(e)
     finally:
@@ -71,6 +81,8 @@ def get_authors(driver) -> List[str]:
         authors = [
             author.text for author in author_list_element.find_elements_by_tag_name('span')]
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Authors not found')
             print(e)
@@ -90,6 +102,8 @@ def get_image_path(driver) -> str:
              )
         )).get_attribute('src')
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Image path not found')
             print(e)
@@ -113,6 +127,8 @@ def get_genres(driver) -> List[str]:
         genres = [
             genre.text for genre in genre_list_element.find_elements_by_tag_name('span')]
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Genres not found')
             print(e)
@@ -130,6 +146,8 @@ def get_description(driver) -> str:
             by=By.XPATH, value='/html/body/app-root/layout/section/main/book-detail/section/div[2]/div/div[2]/pre') + driver.find_elements(by=By.XPATH, value='/html/body/app-root/layout/section/main/book-detail/section/div[2]/div/p')
         description = description[0].text
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Description not found')
             print(e)
@@ -155,6 +173,8 @@ def get_ratings(driver) -> List[int]:
         ]
 
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Ratings not found')
             print(e)
@@ -174,6 +194,8 @@ def get_publisher(driver) -> str:
              )
         )).text
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Publisher not found')
             print(e)
@@ -193,6 +215,8 @@ def get_ISBN(driver) -> str:
              )
         )).text
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('ISBN not found')
             print(e)
@@ -206,12 +230,14 @@ def get_pages(driver) -> int:
     """
     pages = 0
     try:
-        pages = int(WebDriverWait(driver, MAX_ELEMENT_WAIT_TIME).until(EC.presence_of_element_located(
+        pages = int(''.join(filter(str.isdigit, WebDriverWait(driver, MAX_ELEMENT_WAIT_TIME).until(EC.presence_of_element_located(
             (By.XPATH,
              '/html/body/app-root/layout/section/main/book-detail/section/div[3]/div[2]/div[3]/div[2]/span'
              )
-        )).text)
+        )).text)))
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Pages not found')
             print(e)
@@ -231,6 +257,8 @@ def get_publication_count(driver) -> int:
              )
         )).text)
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Publication count not found')
             print(e)
@@ -250,6 +278,8 @@ def get_publication_date(driver) -> str:
              )
         )).text
     except Exception as e:
+        global PROBLEM
+        PROBLEM = True
         if DEBUG:
             print('Publication date not found')
             print(e)
@@ -257,17 +287,17 @@ def get_publication_date(driver) -> str:
         return publication_date
 
 
-if __name__ == '__main__':
-    urls = ['https://behkhaan.ir/book/023f6e23-a89c-465e-9503-883be354c181',  # Shazde
-            'https://behkhaan.ir/book/2bf05adf-719d-4050-a05e-d58d43aa2ee8',  # Natoor
-            'https://behkhaan.ir/book/3292dcca-3634-4ca7-8277-551fc3b2d5fe',  # Aghayed
-            'https://behkhaan.ir/book/9df25320-e93e-4327-86bc-12f26ca89cb1',
-            'https://behkhaan.ir/book/86494391-ee6b-4327-b1a5-b279fe2e5fb3',
-            ]
-    options = get_options()
-    driver = webdriver.Chrome(options=options)
-    try:
-        for url in urls:
-            pprint(parse_book_page(driver, url))
-    finally:
-        driver.quit()
+# if __name__ == '__main__':
+    # urls = ['https://behkhaan.ir/book/023f6e23-a89c-465e-9503-883be354c181',  # Shazde
+    #         'https://behkhaan.ir/book/2bf05adf-719d-4050-a05e-d58d43aa2ee8',  # Natoor
+    #         'https://behkhaan.ir/book/3292dcca-3634-4ca7-8277-551fc3b2d5fe',  # Aghayed
+    #         'https://behkhaan.ir/book/9df25320-e93e-4327-86bc-12f26ca89cb1',
+    #         'https://behkhaan.ir/book/86494391-ee6b-4327-b1a5-b279fe2e5fb3',
+    #         ]
+    # options = get_options()
+    # driver = webdriver.Chrome(options=options)
+    # try:
+    #     for url in urls:
+    #         pprint(parse_book_page(driver, url))
+    # finally:
+    #     driver.quit()
