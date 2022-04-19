@@ -21,9 +21,10 @@ So far I have written some code to extract an individual book's information from
 
 This code scraps data from [this website](https://behkhaan.ir/).
 
-In the future, I should also add a crawler to automatically extract the URL of book pages and use it along with the current code to create a dataset.
+~~In the future, I should also add a crawler to automatically extract the URL of book pages and use it along with the current code to create a dataset.~~  
+UPDATE: **Dataset creation is finished.** Using 24 threads of execution, it took ~4 hours to scrape 26,202 records. The dataset is stored in `books.json` and can also be downloaded from the zip file in the `data` directory.
 
-Then perhaps a little bit of cleaning and that will be it.
+Then perhaps a little bit of cleaning, removing duplicated and such, and that will be it.
 
 I have some vague ideas of creating a graph from this dataset and run some GNNs on it, but there is no time for them now, so maybe in some distant future!
 
