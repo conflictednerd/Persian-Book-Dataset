@@ -1,16 +1,14 @@
-from pprint import pprint
-# from main import get_options
-# from page_parser import parse_book_page as parse
+import time
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-import time
 
 
 def get_lists(driver: webdriver.Chrome, url: str = None):
+    '''
+    Extracts the URL of every genre list
+    '''
     if url is not None:
         driver.get(url)
         time.sleep(7)
@@ -22,6 +20,9 @@ def get_lists(driver: webdriver.Chrome, url: str = None):
 
 
 def parse_list(driver: webdriver.Chrome, list_url: str = None):
+    '''
+    Given the URL of a genre list, returns the URL of every book in that list.
+    '''
     if list_url is not None:
         driver.get(list_url)
 
@@ -29,8 +30,6 @@ def parse_list(driver: webdriver.Chrome, list_url: str = None):
     for _ in range(0, 240):
         driver.find_element(By.XPATH, '/html/body').send_keys(Keys.END)
         time.sleep(0.7)
-
-
 
     # extract book urls
     book_urls = []
@@ -44,17 +43,3 @@ def parse_list(driver: webdriver.Chrome, list_url: str = None):
         print(i)
     finally:
         return book_urls
-
-    # parse each book url
-
-
-if __name__ == '__main__':
-    url = 'https://behkhaan.ir/genre/00ECFB9B-3643-417E-8B8F-C17E7C76464C'
-    driver = webdriver.Chrome(options=get_options())
-    try:
-        urls = parse_list(driver, url)
-        print(len(urls))
-        pprint(urls[:3])
-        pprint(urls[-3:])
-    finally:
-        driver.quit()
