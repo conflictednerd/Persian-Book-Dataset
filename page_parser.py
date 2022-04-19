@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class PageParser():
-    def __init__(self, driver: webdriver, debug=False, max_wait=5) -> None:
+    def __init__(self, driver: webdriver, debug=False, max_wait=8) -> None:
         self.driver = driver
         self.debug = debug
         self.max_wait = max_wait
@@ -21,7 +21,6 @@ class PageParser():
         self.PROBLEM = False
         if url is not None:
             self.driver.get(url)
-            time.sleep(2)
 
         return {
             'url': self.driver.current_url,
